@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 namespace Mission06_lear99.Models
 {
     //this is the model that is used to build the database and temporarily store information as it's being moved into the database
-    public class ApplicationResponse
+    public class Movie
     {
         //each of the variables are error checked at this point
         [Key]
         [Required]
         public int MovieID { get; set; }
-        [Required]
-        public string Category { get; set; }
+        
+        
         
         [Required]
         public string Title { get; set; }
@@ -32,5 +32,10 @@ namespace Mission06_lear99.Models
 
         public string LentTo { get; set; }
         public string Notes { get; set; }
+
+
+        //build foreign key
+        public int CategoryID { get; set; }
+        public Category Category { get; set; }
     }
 }

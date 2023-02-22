@@ -14,16 +14,27 @@ namespace Mission06_lear99.Models
             //leave blank for now
         }
 
-        public DbSet<ApplicationResponse> responses { get; set; }
+        public DbSet<Movie> Movies { get; set; }
+
+        public DbSet<Category> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder mb)
         {
+            mb.Entity<Category>().HasData(
+                new Category { CategoryID = 1, CategoryName="Comedy"},
+                new Category { CategoryID = 2, CategoryName = "Action" },
+                new Category { CategoryID = 3, CategoryName = "Romance" },
+                new Category { CategoryID = 4, CategoryName = "Drama" },
+                new Category { CategoryID = 5, CategoryName = "Horror" },
+                new Category { CategoryID = 6, CategoryName = "Other" }
+                );
+
             //seed the database with 3 of my favorite movies
-            mb.Entity<ApplicationResponse>().HasData(
-                new ApplicationResponse
+            mb.Entity<Movie>().HasData(
+                new Movie
                 {
                     MovieID = 1,
-                    Category = "Comedy",
+                    CategoryID = 1,
                     Title = "The Three Amigos",
                     Year = 1986,
                     Director = "John Landis",
@@ -32,10 +43,10 @@ namespace Mission06_lear99.Models
                     LentTo = "N/A",
                     Notes = "Potentially the greatest movie of all time!"
                 },
-                new ApplicationResponse
+                new Movie
                 {
                     MovieID = 2,
-                    Category = "Action",
+                    CategoryID = 2,
                     Title = "The Man From U.N.C.L.E.",
                     Year = 2015,
                     Director = "Guy Ritchie",
@@ -44,10 +55,10 @@ namespace Mission06_lear99.Models
                     LentTo = "N/A",
                     Notes = "A very fun spy movie with good russian!"
                 },
-                new ApplicationResponse
+                new Movie
                 {
                     MovieID = 3,
-                    Category = "Comedy",
+                    CategoryID = 1,
                     Title = "Fantastic Mr. Fox",
                     Year = 2009,
                     Director = "Wes Anderson",

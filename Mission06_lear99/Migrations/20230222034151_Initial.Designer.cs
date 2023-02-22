@@ -8,7 +8,7 @@ using Mission06_lear99.Models;
 namespace Mission06_lear99.Migrations
 {
     [DbContext(typeof(MovieContext))]
-    [Migration("20230214040233_Initial")]
+    [Migration("20230222034151_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -17,16 +17,63 @@ namespace Mission06_lear99.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.32");
 
-            modelBuilder.Entity("Mission06_lear99.Models.ApplicationResponse", b =>
+            modelBuilder.Entity("Mission06_lear99.Models.Category", b =>
+                {
+                    b.Property<int>("CategoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CategoryID");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryID = 1,
+                            CategoryName = "Comedy"
+                        },
+                        new
+                        {
+                            CategoryID = 2,
+                            CategoryName = "Action"
+                        },
+                        new
+                        {
+                            CategoryID = 3,
+                            CategoryName = "Romance"
+                        },
+                        new
+                        {
+                            CategoryID = 4,
+                            CategoryName = "Drama"
+                        },
+                        new
+                        {
+                            CategoryID = 5,
+                            CategoryName = "Horror"
+                        },
+                        new
+                        {
+                            CategoryID = 6,
+                            CategoryName = "Other"
+                        });
+                });
+
+            modelBuilder.Entity("Mission06_lear99.Models.Movie", b =>
                 {
                     b.Property<int>("MovieID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Category")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Director")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("Edited")
@@ -39,9 +86,11 @@ namespace Mission06_lear99.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Rating")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Year")
@@ -49,13 +98,15 @@ namespace Mission06_lear99.Migrations
 
                     b.HasKey("MovieID");
 
-                    b.ToTable("responses");
+                    b.HasIndex("CategoryID");
+
+                    b.ToTable("Movies");
 
                     b.HasData(
                         new
                         {
                             MovieID = 1,
-                            Category = "Comedy",
+                            CategoryID = 1,
                             Director = "John Landis",
                             Edited = false,
                             LentTo = "N/A",
@@ -67,7 +118,7 @@ namespace Mission06_lear99.Migrations
                         new
                         {
                             MovieID = 2,
-                            Category = "Action",
+                            CategoryID = 2,
                             Director = "Guy Ritchie",
                             Edited = false,
                             LentTo = "N/A",
@@ -79,7 +130,7 @@ namespace Mission06_lear99.Migrations
                         new
                         {
                             MovieID = 3,
-                            Category = "Comedy",
+                            CategoryID = 1,
                             Director = "Wes Anderson",
                             Edited = false,
                             LentTo = "N/A",
@@ -88,6 +139,15 @@ namespace Mission06_lear99.Migrations
                             Title = "Fantastic Mr. Fox",
                             Year = 2009
                         });
+                });
+
+            modelBuilder.Entity("Mission06_lear99.Models.Movie", b =>
+                {
+                    b.HasOne("Mission06_lear99.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

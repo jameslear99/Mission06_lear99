@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Mission06_lear99.Models;
 using System;
@@ -11,14 +12,13 @@ namespace Mission06_lear99.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private MovieContext _dataContext { get; set; }
+
+        private MovieContext dataContext { get; set; }
         //constructor
 
-        public HomeController(ILogger<HomeController> logger, MovieContext someName)
+        public HomeController(MovieContext someName)
         {
-            _logger = logger;
-            _dataContext = someName;
+            dataContext = someName;
         }
 
         public IActionResult Index()
@@ -36,30 +36,82 @@ namespace Mission06_lear99.Controllers
         [HttpGet]
         public IActionResult AddMovies()
         {
+            ViewBag.Categories = dataContext.Categories.ToList();
             return View();
         }
 
         //method for saving the movies into the database. I didn't do any error checking here.
         [HttpPost]
-        public IActionResult AddMovies(ApplicationResponse response)
+        public IActionResult AddMovies(Movie response)
         {
-            _dataContext.Add(response);
-            _dataContext.SaveChanges();
-            return View("Confirmation", response);
+            if (ModelState.IsValid)
+            {
+                dataContext.Add(response);
+                dataContext.SaveChanges();
+                return View("Confirmation", response);
+            }
+            else
+            {
+                ViewBag.Categories = dataContext.Categories.ToList();
+                return View(response);
+            }
+
+            
+        }
+
+        //this is the action to list all the movies currently stored in the database
+        public IActionResult ListMovies()
+        {
+            var movies = dataContext.Movies
+                .Include(x=> x.Category)
+                .OrderBy(x=> x.Title)
+                .ToList();
+
+            return View(movies);
         }
 
 
 
 
-        public IActionResult Privacy()
+
+        //These actions handle the editing functionalities for the website
+        [HttpGet]
+        public IActionResult Edit(int movieid)
         {
-            return View();
+            ViewBag.Categories = dataContext.Categories.ToList();
+
+            var movie = dataContext.Movies.Single(x=> x.MovieID == movieid);
+            return View("AddMovies", movie);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        public IActionResult Edit (Movie updatedMovie)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            dataContext.Update(updatedMovie);
+            dataContext.SaveChanges();
+
+            return RedirectToAction("ListMovies");
+        }
+
+
+
+
+
+        //These actions handle the deleting functionalities for the website
+        [HttpGet]
+        public IActionResult Delete (int movieid)
+        {
+            var movie = dataContext.Movies.Single(x => x.MovieID == movieid);
+            return View(movie);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(Movie deletedMovie)
+        {
+            dataContext.Movies.Remove(deletedMovie);
+            dataContext.SaveChanges();
+
+            return RedirectToAction("ListMovies");
         }
     }
 }
